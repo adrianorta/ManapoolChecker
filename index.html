@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mana Pool Seller Card Checker</title>
+<meta name="description" content="Check a list of Magic cards against a Mana Pool seller's live inventory.">
+<meta name="theme-color" content="#1a1a29">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Card Checker">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" href="./icon-192.png" sizes="192x192">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a1a29'/%3E%3Cpath d='M12 24h34v7H12z' fill='%23bfdfff'/%3E%3Cpath d='M14 32h34v7H14z' fill='%2380c0ff'/%3E%3Cpath d='M16 40h34v7H16z' fill='%230080ff'/%3E%3Cpath d='M20 42l8 8 17-19' stroke='%2346dc8c' stroke-width='7' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --line:#e3e6ea; --ink:#14171c; --mute:#697280;
+    --brand:#0066cc; --ok:#137a3d; --okbg:#f0fbf3; --okline:#bfe6cd; --warn:#8a5a00;
+    --pad:28px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);
+       margin:0;line-height:1.45;
+       padding:var(--pad) max(16px,env(safe-area-inset-left)) calc(80px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-right))}
+  .wrap{max-width:940px;margin:0 auto}
+  h1{font-size:1.5rem;margin:0 0 4px}
+  .sub{color:var(--mute);font-size:.9rem;margin:0 0 22px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+  label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px}
+  .hint{font-weight:400;color:var(--mute)}
+  input[type=text],textarea{width:100%;padding:11px 12px;font-size:16px;font-family:inherit;
+       border:1px solid var(--line);border-radius:8px;background:#fff;color:inherit}
+  input[type=text]:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:-1px;border-color:var(--brand)}
+  textarea{min-height:220px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px}
+  button{padding:12px 22px;background:var(--brand);color:#fff;border:0;border-radius:8px;font-size:16px;
+       font-weight:600;cursor:pointer;min-height:46px}
+  button:hover{filter:brightness(1.08)}
+  button:disabled{opacity:.5;cursor:default;filter:none}
+  button.ghost{background:#fff;color:var(--brand);border:1px solid var(--line);font-weight:500;
+       padding:9px 16px;font-size:14px;min-height:42px}
+  .check{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--mute);font-weight:500;
+       min-height:34px;cursor:pointer}
+  .check input{width:18px;height:18px;accent-color:var(--brand);flex:0 0 auto}
+  #status{margin:14px 0 0;font-size:.9rem;color:var(--mute);min-height:1.2em}
+  #status.err{color:#b3261e;font-weight:600}
+  .bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:8px;display:none}
+  .bar>div{height:100%;width:0;background:var(--brand);transition:width .15s}
+  .summary{font-size:1.05rem;font-weight:600;margin:24px 0 12px;scroll-margin-top:12px}
+  .summary small{display:block;font-weight:400;font-size:.85rem;color:var(--mute);margin-top:2px}
+  .hit{background:var(--okbg);border:1px solid var(--okline);border-left:4px solid var(--ok);
+       border-radius:10px;padding:12px 14px;margin-bottom:9px}
+  .hit .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+  .hit a{font-size:1.03rem;font-weight:600;color:var(--brand);text-decoration:none;
+       display:inline-block;padding:2px 0}
+  .hit a:hover{text-decoration:underline}
+  .price{font-weight:700;color:var(--ok);white-space:nowrap}
+  .meta{margin-top:7px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .tag{font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px;background:#fff;
+       border:1px solid var(--okline);color:#31506b;white-space:nowrap}
+  .tag.qty{background:var(--brand);border-color:var(--brand);color:#fff}
+  .tag.part{background:#fff6e5;border-color:#f0d9a8;color:var(--warn)}
+  .asked{font-size:.78rem;color:var(--mute);margin-top:6px}
+  details{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  summary{cursor:pointer;font-weight:600;font-size:.92rem;padding:4px 0}
+  details ul{margin:10px 0 2px;padding-left:20px;color:var(--mute);font-size:.9rem;columns:2}
+  .empty{color:var(--mute);padding:18px 2px}
+  .out{width:100%;min-height:120px;margin-top:10px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+
+  @media (max-width:640px){
+    :root{--pad:16px}
+    h1{font-size:1.25rem}
+    .sub{margin-bottom:16px;font-size:.85rem}
+    .panel{padding:14px;border-radius:10px}
+    textarea{min-height:170px}
+    #go{width:100%}
+    .row{gap:10px}
+    .row .ghost{flex:1 1 auto}
+    details ul{columns:1}
+    .hit .top{flex-direction:column;align-items:flex-start;gap:2px}
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#14161b; --card:#1b1e25; --line:#2b303a; --ink:#e9ecf1; --mute:#98a2b3;
+          --brand:#5aa9ff; --ok:#4cc98a; --okbg:#16241d; --okline:#2c4d3b; --warn:#e0b25a}
+    input[type=text],textarea{background:#12151a;border-color:#2b303a}
+    button.ghost{background:#1b1e25}
+    .tag{background:#1b1e25;color:#b9c6d6}
+    .price{color:var(--ok)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Mana Pool Seller Card Checker</h1>
+  <p class="sub">Paste a list of cards. Only the ones this seller actually has in stock are listed.</p>
+
+  <div class="panel">
+    <label for="seller">Seller <span class="hint">— store name or username</span></label>
+    <input type="text" id="seller" value="moondroptradingpost" spellcheck="false" autocapitalize="off" autocomplete="off">
+
+    <div class="row">
+      <label class="check"><input type="checkbox" id="loose" checked> Fall back to partial name matches</label>
+      <label class="check"><input type="checkbox" id="shownf" checked> Show a "not in stock" list</label>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label for="cards">Card names <span class="hint">— one per line. Leading quantities and trailing set codes are ignored.</span></label>
+    <textarea id="cards" spellcheck="false" autocapitalize="off" autocorrect="off" placeholder="Sol Ring&#10;Scarab Feast&#10;4x Avishkar Raceway&#10;Geth, Thane of Contracts (ONE) 92"></textarea>
+    <div class="row">
+      <button id="go">Check availability</button>
+      <button class="ghost" id="reload" title="Re-download this seller's inventory">Refresh inventory</button>
+      <button class="ghost" id="clear">Clear list</button>
+    </div>
+    <div id="status"></div>
+    <div class="bar" id="bar"><div></div></div>
+  </div>
+
+  <div id="results"></div>
+</div>
+
+<script>
+const API   = 'https://sb-api.manapool.com/rest/v1/';
+const KEY   = 'sb_publishable_mwzveHhY-M-t19HCwYC1lw_pRUJyYZP';
+const PAGE  = 1000;
+const MAXP  = 200;               // safety stop: 200k listings
+const COND  = {NM:'Near Mint', LP:'Lightly Played', MP:'Moderately Played', HP:'Heavily Played', DMG:'Damaged'};
+const FIN   = {NF:'Non-Foil', FO:'Foil', EF:'Etched Foil'};
+const CONDORDER = ['NM','LP','MP','HP','DMG'];
+
+const $ = id => document.getElementById(id);
+const statusEl = $('status'), barEl = $('bar'), barFill = barEl.firstElementChild;
+const cache = new Map();          // normalized seller -> index
+
+function say(msg, isErr){ statusEl.textContent = msg; statusEl.className = isErr ? 'err' : ''; }
+function progress(frac){
+  if(frac === null){ barEl.style.display='none'; return; }
+  barEl.style.display='block'; barFill.style.width = Math.round(frac*100)+'%';
+}
+
+/* ---------- saved settings (silently skipped if storage is unavailable) ---------- */
+
+const STORE = 'mpChecker.v1';
+function save(){
+  try{
+    localStorage.setItem(STORE, JSON.stringify({
+      seller:$('seller').value, cards:$('cards').value,
+      loose:$('loose').checked, shownf:$('shownf').checked
+    }));
+  }catch(_){}
+}
+function restore(){
+  try{
+    const s = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if(!s) return;
+    if(s.seller) $('seller').value = s.seller;
+    if(s.cards)  $('cards').value  = s.cards;
+    if(typeof s.loose  === 'boolean') $('loose').checked  = s.loose;
+    if(typeof s.shownf === 'boolean') $('shownf').checked = s.shownf;
+  }catch(_){}
+}
+
+/* ---------- name handling ---------- */
+
+// Card-name key: lowercase, apostrophes dropped, everything else non-alphanumeric -> single space.
+// "Urza's Saga" and "Urzas Saga" both become "urzas saga".
+function key(s){
+  return s.toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+          .replace(/['’‘`´]/g,'')
+          .replace(/[^a-z0-9]+/g,' ')
+          .trim();
+}
+function sellerKey(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,''); }
+
+// Strip decklist noise: leading quantity, trailing set code / collector number.
+function cleanLine(line){
+  let s = line.trim();
+  s = s.replace(/^\d+\s*[xX]?\s+/, '');                            // "3 Sol Ring" / "3x Sol Ring"
+  s = s.replace(/\s*[\(\[][^)\]]*[\)\]]\s*[\w\-\*★]*\s*$/, ''); // "(NEO) 123", "[M21]"
+  s = s.replace(/\s*\*[FE]\*\s*$/i, '');                           // MTGO-style foil markers
+  return s.trim();
+}
+
+function money(cents){
+  if(cents === null || cents === undefined) return '';
+  return '$' + (cents/100).toFixed(2);
+}
+
+/* ---------- inventory ---------- */
+
+async function resolveSeller(raw){
+  const k = sellerKey(raw);
+  if(!k) throw new Error('Enter a seller name.');
+  let r = await fetch(API+'profiles?select=username,normalized_username&normalized_username=eq.'+encodeURIComponent(k)+'&limit=1&apikey='+KEY);
+  if(!r.ok) throw new Error('Seller lookup failed (HTTP '+r.status+').');
+  let j = await r.json();
+  if(j.length) return j[0];
+
+  r = await fetch(API+'profiles?select=username,normalized_username&normalized_username=ilike.'+encodeURIComponent('*'+k+'*')+'&limit=6&apikey='+KEY);
+  j = r.ok ? await r.json() : [];
+  if(j.length === 1) return j[0];
+  if(j.length > 1) throw new Error('Several sellers match "'+raw+'": '+j.map(p=>p.username).join(', ')+'. Pick one exactly.');
+  throw new Error('No Mana Pool seller found for "'+raw+'".');
+}
+
+async function loadInventory(profile){
+  const k = profile.normalized_username;
+  if(cache.has(k)) return cache.get(k);
+
+  const cols = 'name,quantity,from_price,condition_ids,finish_ids';
+  const rows = [];
+  for(let p=0; p<MAXP; p++){
+    const url = API+'cardsmtg_browse_filter_s?select='+cols
+              + '&filter_seller_normalized_username=eq.'+encodeURIComponent(k)
+              + '&order=card_id.asc&limit='+PAGE+'&offset='+(p*PAGE)+'&apikey='+KEY;
+    const r = await fetch(url);
+    if(!r.ok) throw new Error('Inventory request failed (HTTP '+r.status+').');
+    const batch = await r.json();
+    rows.push(...batch);
+    say('Loading ' + profile.username + "'s inventory… " + rows.length.toLocaleString() + ' listings');
+    progress(Math.min(0.95, rows.length/12000));
+    if(batch.length < PAGE) break;
+  }
+
+  // Group printings of the same card together, and index each face of a DFC.
+  const byName = new Map();
+  for(const row of rows){
+    const nk = key(row.name);
+    let e = byName.get(nk);
+    if(!e){ e = {name:row.name, qty:0, low:null, conds:new Set(), fins:new Set(), printings:0}; byName.set(nk, e); }
+    e.printings++;
+    e.qty += (row.quantity || 0);
+    if(row.from_price != null && (e.low === null || row.from_price < e.low)) e.low = row.from_price;
+    (row.condition_ids||[]).forEach(c=>e.conds.add(c));
+    (row.finish_ids||[]).forEach(f=>e.fins.add(f));
+  }
+  const index = new Map(byName);              // exact keys
+  for(const [nk,e] of byName){
+    if(e.name.includes('//')){                // also index each face name on its own
+      for(const face of e.name.split('//')){
+        const fk = key(face);
+        if(fk && !index.has(fk)) index.set(fk, e);
+      }
+    }
+  }
+
+  const inv = {profile, index, list:[...byName.values()].map(e=>({e, k:key(e.name)})), count:rows.length};
+  cache.set(k, inv);
+  return inv;
+}
+
+/* ---------- matching + render ---------- */
+
+function lookup(q, inv, loose){
+  const qk = key(q);
+  if(!qk) return null;
+  const hit = inv.index.get(qk);
+  if(hit) return {entry:hit, partial:false};
+  if(!loose) return null;
+  let best = null;
+  for(const {e,k} of inv.list){
+    if(k.includes(qk) || qk.includes(k)){
+      if(!best || k.length < best.k.length) best = {e,k};
+    }
+  }
+  return best ? {entry:best.e, partial:true} : null;
+}
+
+function searchLink(name, sellerNorm){
+  const front = name.split('//')[0].trim();
+  return 'https://manapool.com/cards?q='+encodeURIComponent(front)+'&seller='+encodeURIComponent(sellerNorm);
+}
+
+function render(found, missing, inv){
+  const res = $('results');
+  const sellerNorm = inv.profile.normalized_username;
+  const copies = found.reduce((n,f)=>n+f.entry.qty, 0);
+
+  let html = '<div class="summary" id="sumline">'
+    + found.length + ' of ' + (found.length+missing.length) + ' cards in stock at ' + esc(inv.profile.username)
+    + '<small>' + copies.toLocaleString() + ' total copies · searched ' + inv.count.toLocaleString() + ' listings</small></div>';
+
+  if(!found.length){
+    html += '<div class="empty">None of these cards are currently in stock from this seller.</div>';
+  }
+
+  for(const f of found){
+    const e = f.entry;
+    const conds = CONDORDER.filter(c=>e.conds.has(c));
+    const fins  = [...e.fins];
+    html += '<div class="hit"><div class="top">'
+      + '<a href="'+searchLink(e.name, sellerNorm)+'" target="_blank" rel="noopener">'+esc(e.name)+'</a>'
+      + (e.low!=null ? '<span class="price">from '+money(e.low)+'</span>' : '')
+      + '</div><div class="meta">'
+      + '<span class="tag qty">'+e.qty+'x</span>'
+      + conds.map(c=>'<span class="tag" title="'+COND[c]+'">'+c+'</span>').join('')
+      + fins.map(x=>'<span class="tag">'+(FIN[x]||x)+'</span>').join('')
+      + (e.printings>1 ? '<span class="tag">'+e.printings+' printings</span>' : '')
+      + (f.partial ? '<span class="tag part">partial match</span>' : '')
+      + '</div>'
+      + (key(f.asked)!==key(e.name) ? '<div class="asked">you asked for: '+esc(f.asked)+'</div>' : '')
+      + '</div>';
+  }
+
+  if(found.length){
+    html += '<div class="row"><button class="ghost" id="cpLinks">Copy links</button>'
+          + '<button class="ghost" id="cpNames">Copy card names</button></div>'
+          + '<textarea class="out" id="outbox" readonly hidden></textarea>';
+  }
+
+  if(missing.length && $('shownf').checked){
+    html += '<details><summary>Not in stock ('+missing.length+')</summary><ul>'
+          + missing.map(m=>'<li>'+esc(m)+'</li>').join('') + '</ul></details>';
+  }
+
+  res.innerHTML = html;
+
+  if(found.length){
+    const box = $('outbox');
+    const show = txt => { box.hidden=false; box.value=txt; box.select();
+      try{ navigator.clipboard.writeText(txt); }catch(_){} };
+    $('cpLinks').onclick = () => show(found.map(f=>searchLink(f.entry.name, sellerNorm)).join('\n'));
+    $('cpNames').onclick = () => show(found.map(f=>f.entry.name).join('\n'));
+  }
+
+  if(window.innerWidth <= 640){
+    $('sumline').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ---------- main ---------- */
+
+async function run(forceReload){
+  const rawSeller = $('seller').value.trim();
+  const lines = $('cards').value.split('\n').map(cleanLine)
+                  .filter(l => l && !/^(\/\/|#)/.test(l));
+
+  save();
+  $('results').innerHTML = '';
+  if(!rawSeller){ say('Enter a seller name.', true); return; }
+  if(!forceReload && !lines.length){ say('Paste at least one card name.', true); return; }
+
+  $('go').disabled = $('reload').disabled = true;
+  try{
+    say('Looking up seller…'); progress(0.05);
+    const profile = await resolveSeller(rawSeller);
+    if(forceReload) cache.delete(profile.normalized_username);
+    const inv = await loadInventory(profile);
+    progress(1);
+
+    if(!lines.length){ say('Loaded '+inv.count.toLocaleString()+' listings for '+profile.username+'. Paste some cards and hit Check.'); return; }
+
+    const loose = $('loose').checked;
+    const found = [], missing = [];
+    const seen = new Set();
+    for(const line of lines){
+      if(seen.has(key(line))) continue;
+      seen.add(key(line));
+      const m = lookup(line, inv, loose);
+      if(m){ m.asked = line; found.push(m); } else missing.push(line);
+    }
+    say('Done.');
+    render(found, missing, inv);
+  }catch(err){
+    say((err && err.message) ? err.message : String(err), true);
+  }finally{
+    $('go').disabled = $('reload').disabled = false;
+    setTimeout(()=>progress(null), 600);
+  }
+}
+
+restore();
+$('go').onclick     = () => run(false);
+$('reload').onclick = () => run(true);
+$('clear').onclick  = () => { $('cards').value=''; $('results').innerHTML=''; say(''); save(); $('cards').focus(); };
+['seller','cards'].forEach(id => $(id).addEventListener('change', save));
+['loose','shownf'].forEach(id => $(id).addEventListener('change', save));
+$('cards').addEventListener('keydown', e => {
+  if((e.ctrlKey||e.metaKey) && e.key === 'Enter') run(false);
+});
+
+// Works as a home-screen app even when opened straight off the filesystem.
+if(location.protocol === 'file:'){
+  try{
+    const m = {name:'Mana Pool Card Checker', short_name:'Card Checker', start_url:'./',
+               display:'standalone', background_color:'#1a1a29', theme_color:'#1a1a29', icons:[]};
+    document.querySelector('link[rel=manifest]').href =
+      URL.createObjectURL(new Blob([JSON.stringify(m)], {type:'application/manifest+json'}));
+  }catch(_){}
+}
+</script>
+</body>
+</html>
