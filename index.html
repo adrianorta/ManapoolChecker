@@ -523,16 +523,16 @@ function render(found, missing, inv){
   const cost   = found.reduce((n,f)=>n + f.picks.reduce((m,p)=>m + p.take*p.listing.price, 0), 0);
 
   let html = '<div class="summary" id="sumline">'
-    + found.length + ' of ' + (found.length+missing.length) + ' cards in stock'
-    + '<small>' + adding.toLocaleString() + ' ' + (adding===1?'copy':'copies') + ' · ' + money(cost) + ' of cards'
-    + (short ? ' · ' + short + ' short of what you asked for' : '')
+    + found.length + ' of ' + (found.length+missing.length) + ' requested cards available'
+    + '<small>' + adding.toLocaleString() + ' ' + (adding===1?'copy':'copies') + ' · ' + money(cost) + ' total'
+    + (short ? ' · ' + short + ' short of requested quantity' : '')
     + ' · searched ' + inv.count.toLocaleString() + ' listings</small></div>';
 
   if(!found.length){
     html += '<div class="empty">None of these cards are currently in stock.</div>';
   } else {
     html += '<div class="cartbar">'
-      + '<button id="tocart">Add ' + adding + ' ' + (adding===1?'copy':'copies') + ' to Mana Pool cart</button>'
+      + '<button id="tocart">Add ' + adding + ' ' + (adding===1?'item':'items') + ' to Mana Pool cart</button>'
       + '<button class="ghost" id="cpList">Copy list</button>'
       + '<button class="ghost" id="cpLinks">Copy links</button>'
       + '</div><div id="cartmsg"></div>';
@@ -546,17 +546,17 @@ function render(found, missing, inv){
                   +(p.listing.fin!=='NF' ? ' '+(FIN[p.listing.fin]||p.listing.fin) : '')+' @ '+money(p.listing.price)).join(' · ');
     html += '<div class="hit"><div class="top">'
       + '<a href="'+searchLink(e.name)+'" target="_blank" rel="noopener">'+esc(e.name)+'</a>'
-      + (e.low!=null ? '<span class="price">from '+money(e.low)+'</span>' : '')
+      + (e.low!=null ? '<span class="price">Lowest price '+money(e.low)+'</span>' : '')
       + '</div><div class="meta">'
-      + '<span class="tag qty">adding '+f.want+'x</span>'
-      + (f.want < f.asked_qty ? '<span class="tag short">you wanted '+f.asked_qty+'</span>' : '')
+      + '<span class="tag qty">Adding '+f.want+'</span>'
+      + (f.want < f.asked_qty ? '<span class="tag short">Requested: '+f.asked_qty+'</span>' : '')
       + '<span class="tag">'+e.qty+' in stock</span>'
       + conds.map(c=>'<span class="tag" title="'+COND[c]+'">'+c+'</span>').join('')
       + fins.map(x=>'<span class="tag">'+(FIN[x]||x)+'</span>').join('')
       + (e.prints.size>1 ? '<span class="tag">'+e.prints.size+' printings</span>' : '')
       + (f.partial ? '<span class="tag part">partial match</span>' : '')
       + '</div>'
-      + '<div class="picks">taking ' + esc(picks) + '</div>'
+      + '<div class="picks">Selected: ' + esc(picks) + '</div>'
       + (key(f.asked)!==key(e.name) ? '<div class="asked">you asked for: '+esc(f.asked)+'</div>' : '')
       + '</div>';
   }
@@ -600,7 +600,7 @@ async function run(forceReload){
   $('results').innerHTML = '';
   if(!forceReload && !wanted.length){ say('Paste at least one card name.', true); return; }
 
-  $('go').disabled = $('reload').disabled = true;
+  $('go').disabled = true;
   try{
     if(forceReload) inventory = null;
     progress(0.05);
@@ -627,7 +627,7 @@ async function run(forceReload){
   }catch(err){
     say((err && err.message) ? err.message : String(err), true);
   }finally{
-    $('go').disabled = $('reload').disabled = false;
+    $('go').disabled = false;
     setTimeout(()=>progress(null), 600);
   }
 }
