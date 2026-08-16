@@ -33,10 +33,11 @@
   .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
   label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px}
   .hint{font-weight:400;color:var(--mute)}
-  textarea{width:100%;padding:11px 12px;font-size:15px;border:1px solid var(--line);border-radius:8px;
-       background:#fff;color:inherit;min-height:240px;resize:vertical;
+  textarea,input[type=email],input[type=text]{width:100%;padding:11px 12px;font-size:16px;
+       border:1px solid var(--line);border-radius:8px;background:#fff;color:inherit;font-family:inherit}
+  textarea{min-height:240px;resize:vertical;font-size:15px;
        font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-  textarea:focus{outline:2px solid var(--brand);outline-offset:-1px;border-color:var(--brand)}
+  textarea:focus,input:focus{outline:2px solid var(--brand);outline-offset:-1px;border-color:var(--brand)}
   .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px}
   button{padding:12px 22px;background:var(--brand);color:#fff;border:0;border-radius:8px;font-size:16px;
        font-weight:600;cursor:pointer;min-height:46px}
@@ -50,6 +51,12 @@
   .bar>div{height:100%;width:0;background:var(--brand);transition:width .15s}
   .summary{font-size:1.05rem;font-weight:600;margin:24px 0 12px;scroll-margin-top:12px}
   .summary small{display:block;font-weight:400;font-size:.85rem;color:var(--mute);margin-top:2px}
+  .cartbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
+  #tocart{background:var(--ok);min-height:48px}
+  #cartmsg{font-size:.87rem;margin:0 0 16px;min-height:1.2em;color:var(--mute)}
+  #cartmsg.good{color:var(--ok);font-weight:600}
+  #cartmsg.bad{color:#b3261e;font-weight:600}
+  #cartmsg a{color:var(--brand)}
   .hit{background:var(--okbg);border:1px solid var(--okline);border-left:4px solid var(--ok);
        border-radius:10px;padding:12px 14px;margin-bottom:9px}
   .hit .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
@@ -61,7 +68,8 @@
   .tag{font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px;background:#fff;
        border:1px solid var(--okline);color:#31506b;white-space:nowrap}
   .tag.qty{background:var(--brand);border-color:var(--brand);color:#fff}
-  .tag.part{background:#fff6e5;border-color:#f0d9a8;color:var(--warn)}
+  .tag.part,.tag.short{background:#fff6e5;border-color:#f0d9a8;color:var(--warn)}
+  .picks{margin-top:7px;font-size:.79rem;color:var(--mute)}
   .asked{font-size:.78rem;color:var(--mute);margin-top:6px}
   details{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
   summary{cursor:pointer;font-weight:600;font-size:.92rem;padding:4px 0}
@@ -69,26 +77,42 @@
   .empty{color:var(--mute);padding:18px 2px}
   .out{width:100%;min-height:120px;margin-top:10px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
 
+  /* account */
+  .acct{margin-top:26px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .acct h2{font-size:.95rem;margin:0 0 6px}
+  .acct p{font-size:.84rem;color:var(--mute);margin:0 0 12px}
+  .who{display:flex;align-items:center;gap:9px;font-size:.9rem;flex-wrap:wrap}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);flex:0 0 auto}
+  .dot.off{background:#c2c8d0}
+  .field{max-width:340px}
+  #signinerr{font-size:.85rem;color:#b3261e;font-weight:600;margin-top:10px;min-height:1em}
+  .step2{display:none}
+  .sent{background:#f0fbf3;border:1px solid var(--okline);border-left:4px solid var(--ok);
+       border-radius:8px;padding:10px 13px;margin-top:14px;font-size:.83rem;line-height:1.5}
+
   @media (max-width:640px){
     :root{--pad:16px}
     header{gap:11px;margin-bottom:16px}
     header img{width:40px;height:40px}
     h1{font-size:1.1rem;letter-spacing:.03em}
     .sub{font-size:.8rem}
-    .panel{padding:14px;border-radius:10px}
+    .panel,.acct{padding:14px;border-radius:10px}
     textarea{min-height:190px}
-    #go{width:100%}
+    #go,#tocart{width:100%}
     .row{gap:10px}
-    .row .ghost{flex:1 1 auto}
+    .row .ghost,.cartbar .ghost{flex:1 1 auto}
     details ul{columns:1}
     .hit .top{flex-direction:column;align-items:flex-start;gap:2px}
+    .field{max-width:none}
   }
   @media (prefers-color-scheme:dark){
     :root{--bg:#14161b; --card:#1b1e25; --line:#2b303a; --ink:#e9ecf1; --mute:#98a2b3;
           --brand:#5aa9ff; --ok:#4cc98a; --okbg:#16241d; --okline:#2c4d3b; --warn:#e0b25a}
-    textarea{background:#12151a;border-color:#2b303a}
+    textarea,input[type=email],input[type=text]{background:#12151a;border-color:#2b303a}
     button.ghost{background:#1b1e25}
     .tag{background:#1b1e25;color:#b9c6d6}
+    .tag.part,.tag.short{background:#2a2314;border-color:#5a4a22;color:var(--warn)}
+    .sent{background:#16241d;border-color:#2c4d3b}
   }
 </style>
 </head>
@@ -107,7 +131,6 @@
     <textarea id="cards" spellcheck="false" autocapitalize="off" autocorrect="off" placeholder="Sol Ring&#10;Scarab Feast&#10;4x Avishkar Raceway&#10;Geth, Thane of Contracts (ONE) 92"></textarea>
     <div class="row">
       <button id="go">Check availability</button>
-      <button class="ghost" id="reload" title="Re-download the current inventory">Refresh inventory</button>
       <button class="ghost" id="clear">Clear list</button>
     </div>
     <div id="status"></div>
@@ -115,10 +138,42 @@
   </div>
 
   <div id="results"></div>
+
+  <div class="acct" id="acct">
+    <h2>Mana Pool account</h2>
+    <div class="who" id="who"></div>
+
+    <div id="signinbox" style="display:none">
+      <p>Already signed in on manapool.com? That doesn't carry over — browsers don't let one site
+         read another site's login, and this page is on a different domain. It needs its own, once.
+         Mana Pool emails you a sign-in link, the same login they already use; no password is
+         typed here or stored.</p>
+      <div class="field">
+        <label for="email">Email on your Mana Pool account</label>
+        <input type="email" id="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com">
+      </div>
+      <div class="row"><button class="ghost" id="sendlink">Email me a sign-in link</button></div>
+
+      <div class="step2" id="step2">
+        <div class="sent">Check your email and <strong>copy the sign-in link</strong>.
+          <br>&bull; Come back to this page, and <strong>paste it below</strong>.
+          <br>&bull; <strong>Link already used up?</strong> Send another one.</div>
+        <div class="field" style="margin-top:14px">
+          <label for="code">Paste the address here</label>
+          <input type="text" id="code" autocomplete="one-time-code" spellcheck="false" autocapitalize="off" placeholder="https://…">
+        </div>
+        <div class="row"><button id="verify">Finish signing in</button></div>
+      </div>
+
+      <div id="signinerr"></div>
+    </div>
+  </div>
 </div>
 
 <script>
-const API    = 'https://sb-api.manapool.com/rest/v1/';
+const HOST   = 'https://sb-api.manapool.com';
+const API    = HOST + '/rest/v1/';
+const AUTH   = HOST + '/auth/v1/';
 const KEY    = 'sb_publishable_mwzveHhY-M-t19HCwYC1lw_pRUJyYZP';
 const SELLER = 'moondroptradingpost';          // Mana Pool normalized username
 const STORE  = 'Moon Drop Trading Post';       // display name
@@ -131,6 +186,7 @@ const CONDORDER = ['NM','LP','MP','HP','DMG'];
 const $ = id => document.getElementById(id);
 const statusEl = $('status'), barEl = $('bar'), barFill = barEl.firstElementChild;
 let inventory = null;                          // loaded once, reused
+let lastFound = null;                          // results of the most recent check
 
 function say(msg, isErr){ statusEl.textContent = msg; statusEl.className = isErr ? 'err' : ''; }
 function progress(frac){
@@ -138,11 +194,16 @@ function progress(frac){
   barEl.style.display='block'; barFill.style.width = Math.round(frac*100)+'%';
 }
 
-/* ---------- saved list (silently skipped if storage is unavailable) ---------- */
+/* ---------- local storage (silently skipped if unavailable) ---------- */
 
-const SAVEKEY = 'moondrop.cards.v1';
-function save(){ try{ localStorage.setItem(SAVEKEY, $('cards').value); }catch(_){} }
-function restore(){ try{ const v = localStorage.getItem(SAVEKEY); if(v) $('cards').value = v; }catch(_){} }
+const LS = {
+  get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(_){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(_){} }
+};
+const SAVEKEY = 'moondrop.cards.v1', RTKEY = 'moondrop.rt.v1', EMKEY = 'moondrop.email.v1';
+function save(){ LS.set(SAVEKEY, $('cards').value); }
+function restore(){ const v = LS.get(SAVEKEY); if(v) $('cards').value = v; }
 
 /* ---------- name handling ---------- */
 
@@ -156,52 +217,198 @@ function key(s){
           .trim();
 }
 
-// Strip decklist noise: leading quantity, trailing set code / collector number.
-function cleanLine(line){
-  let s = line.trim();
-  s = s.replace(/^\d+\s*[xX]?\s+/, '');                            // "3 Sol Ring" / "3x Sol Ring"
-  s = s.replace(/\s*[\(\[][^)\]]*[\)\]]\s*[\w\-\*★]*\s*$/, '');    // "(NEO) 123", "[M21]"
+// Split a decklist line into {name, qty}, dropping set codes and foil markers.
+function parseLine(line){
+  let s = line.trim(), qty = 1;
+  const m = s.match(/^(\d{1,3})\s*[xX]?\s+/);                      // "3 Sol Ring" / "3x Sol Ring"
+  if(m){ qty = Math.max(1, parseInt(m[1],10)); s = s.slice(m[0].length); }
+  s = s.replace(/\s*[\(\[][^)\]]*[\)\]]\s*[\w\-\*★]*\s*$/, ''); // "(NEO) 123", "[M21]"
   s = s.replace(/\s*\*[FE]\*\s*$/i, '');                           // MTGO-style foil markers
-  return s.trim();
+  return {name: s.trim(), qty};
 }
 
 function money(cents){
   return (cents === null || cents === undefined) ? '' : '$' + (cents/100).toFixed(2);
 }
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ---------- signing in ----------
+   Mana Pool runs on Supabase, whose auth service is designed to be called straight
+   from a browser on any origin. We ask it to email a sign-in code, trade the code for
+   a session, and keep only the refresh token — which we swap for a fresh access token
+   before each cart write. No password is ever typed here or stored.                 */
+
+let account = { email: LS.get(EMKEY) || null, state: LS.get(RTKEY) ? 'checking' : 'out' };
+
+async function authPost(path, body){
+  const r = await fetch(AUTH + path, {
+    method:'POST',
+    headers:{'Content-Type':'application/json', apikey:KEY},
+    body: JSON.stringify(body)
+  });
+  let j = {};
+  try{ j = await r.json(); }catch(_){}
+  return {ok:r.ok, status:r.status, data:j};
+}
+function authError(res, fallback){
+  const d = res.data || {};
+  return d.msg || d.error_description || d.message || d.error || (fallback + ' (HTTP ' + res.status + ')');
+}
+
+// Ask Mana Pool to email a sign-in link, pointed back at this page where possible.
+// If their allow-list rejects this address the link lands on manapool.com instead,
+// and the paste box is the way home.
+async function sendLink(email){
+  let path = 'otp';
+  if(location.protocol === 'http:' || location.protocol === 'https:'){
+    path += '?redirect_to=' + encodeURIComponent(location.origin + location.pathname);
+  }
+  const res = await authPost(path, {email, create_user:false});
+  if(!res.ok) throw new Error(authError(res, 'Could not send the email'));
+}
+
+// Accepts a pasted sign-in link, a link that already redirected (tokens left in the
+// fragment), or a plain 6-digit code.
+async function verifyInput(email, raw){
+  const input = raw.trim();
+
+  // A link that already went through: the session is sitting right there in the URL.
+  const done = input.match(/[#&?]refresh_token=([^&\s]+)/);
+  if(done){
+    const res = await authPost('token?grant_type=refresh_token', {refresh_token: decodeURIComponent(done[1])});
+    if(res.ok && res.data.refresh_token) return res.data;
+    throw new Error(authError(res, 'That link has already been used'));
+  }
+
+  const linked = input.match(/[?&](token_hash|token)=([^&\s]+)/);
+  const attempts = linked
+    ? [{token_hash: decodeURIComponent(linked[2]), type:'magiclink'},
+       {token_hash: decodeURIComponent(linked[2]), type:'email'}]
+    : [{email, token: input, type:'magiclink'},
+       {email, token: input, type:'email'}];
+
+  let last = null;
+  for(const body of attempts){
+    const res = await authPost('verify', body);
+    if(res.ok && res.data && res.data.refresh_token) return res.data;
+    last = res;
+  }
+  throw new Error(authError(last, 'That link or code did not work'));
+}
+
+// Swap the stored refresh token for a live access token, rotating what we keep.
+async function accessToken(){
+  const rt = LS.get(RTKEY);
+  if(!rt) return null;
+  const res = await authPost('token?grant_type=refresh_token', {refresh_token: rt});
+  if(!res.ok || !res.data.access_token){ signOut(); return null; }
+  if(res.data.refresh_token) LS.set(RTKEY, res.data.refresh_token);
+  if(res.data.user && res.data.user.email){ account.email = res.data.user.email; LS.set(EMKEY, account.email); }
+  return res.data.access_token;
+}
+
+function signIn(session){
+  LS.set(RTKEY, session.refresh_token);
+  account.state = 'in';
+  if(session.user && session.user.email){ account.email = session.user.email; LS.set(EMKEY, account.email); }
+  paintAccount();
+}
+function signOut(){
+  LS.del(RTKEY);
+  account.state = 'out';
+  paintAccount();
+}
+
+function paintAccount(){
+  const who = $('who'), box = $('signinbox');
+  if(account.state === 'checking'){
+    who.innerHTML = '<span class="dot off"></span><span>Checking your Mana Pool sign-in…</span>';
+    box.style.display = 'none';
+    return;
+  }
+  if(account.state === 'in'){
+    who.innerHTML = '<span class="dot"></span><span>Signed in'
+      + (account.email ? ' as <strong>'+esc(account.email)+'</strong>' : '')
+      + ' — <em>Add to cart</em> is one click.</span>'
+      + '<button class="ghost" id="signout" style="margin-left:auto">Sign out</button>';
+    box.style.display = 'none';
+    $('signout').onclick = () => signOut();
+  } else {
+    who.innerHTML = '<span class="dot off"></span><span>Not signed in — the cart button will ask you to sign in first.</span>';
+    box.style.display = 'block';
+    if(account.email && !$('email').value) $('email').value = account.email;
+  }
+}
+
+// Catch a magic link landing back here, then prove the stored session still works
+// rather than just assuming it does.
+async function initAccount(){
+  const frag = location.hash.slice(1);
+  if(/(access_token|refresh_token)=/.test(frag)){
+    const p = new URLSearchParams(frag);
+    const rt = p.get('refresh_token');
+    history.replaceState(null, '', location.pathname + location.search);
+    if(rt){ LS.set(RTKEY, rt); account.state = 'checking'; }
+  } else if(/^error/.test(frag) || /[&?]error=/.test(frag)){
+    const p = new URLSearchParams(frag);
+    history.replaceState(null, '', location.pathname + location.search);
+    const msg = p.get('error_description') || p.get('error');
+    if(msg) setTimeout(()=>{ $('signinerr').textContent = msg.replace(/\+/g,' '); }, 0);
+  }
+
+  paintAccount();
+  if(account.state !== 'checking') return;
+
+  const tok = await accessToken();      // rotates the stored token, or clears it
+  account.state = tok ? 'in' : 'out';
+  paintAccount();
+}
 
 /* ---------- inventory ---------- */
 
+// Pull every individual listing, so each copy we add can name an exact inventory row.
 async function loadInventory(){
   if(inventory) return inventory;
 
-  const cols = 'name,quantity,from_price,condition_ids,finish_ids';
+  say('Finding the store…');
+  const who = await (await fetch(API+'cardsmtg_browse_filter_s?select=seller_ids'
+             + '&filter_seller_normalized_username=eq.'+SELLER+'&limit=1&apikey='+KEY)).json();
+  const sellerId = who && who[0] && who[0].seller_ids && who[0].seller_ids[0];
+  if(!sellerId) throw new Error('Could not find ' + STORE + ' on Mana Pool.');
+
+  const sel = 'id,quantity,raw_price_cents,products_mtg_single(condition_id,finish_id,language_id,cardsmtg(name,setCode,number))';
   const rows = [];
   for(let p=0; p<MAXP; p++){
-    const url = API+'cardsmtg_browse_filter_s?select='+cols
-              + '&filter_seller_normalized_username=eq.'+SELLER
-              + '&order=card_id.asc&limit='+PAGE+'&offset='+(p*PAGE)+'&apikey='+KEY;
+    const url = API+'inventory?select='+encodeURIComponent(sel)
+              + '&seller_id=eq.'+sellerId+'&product_type=eq.mtg_single&quantity=gt.0'
+              + '&order=id.asc&limit='+PAGE+'&offset='+(p*PAGE)+'&apikey='+KEY;
     const r = await fetch(url);
     if(!r.ok) throw new Error('Inventory request failed (HTTP '+r.status+'). Try again in a moment.');
     const batch = await r.json();
     rows.push(...batch);
     say('Loading inventory… ' + rows.length.toLocaleString() + ' listings');
-    progress(Math.min(0.95, rows.length/12000));
+    progress(Math.min(0.95, rows.length/13000));
     if(batch.length < PAGE) break;
   }
   if(!rows.length) throw new Error('No listings came back for ' + STORE + '. The store may be paused, or the API key may have changed.');
 
-  // Group printings of the same card together, and index each face of a DFC.
+  // Fold listings into one entry per card name, keeping every listing so we can pick exact copies.
   const byName = new Map();
   for(const row of rows){
-    const nk = key(row.name);
+    const p = row.products_mtg_single, c = p && p.cardsmtg;
+    if(!c || !c.name) continue;
+    const nk = key(c.name);
     let e = byName.get(nk);
-    if(!e){ e = {name:row.name, qty:0, low:null, conds:new Set(), fins:new Set(), printings:0}; byName.set(nk, e); }
-    e.printings++;
-    e.qty += (row.quantity || 0);
-    if(row.from_price != null && (e.low === null || row.from_price < e.low)) e.low = row.from_price;
-    (row.condition_ids||[]).forEach(c=>e.conds.add(c));
-    (row.finish_ids||[]).forEach(f=>e.fins.add(f));
+    if(!e){ e = {name:c.name, qty:0, low:null, conds:new Set(), fins:new Set(), prints:new Set(), listings:[]}; byName.set(nk, e); }
+    e.qty += row.quantity;
+    if(e.low === null || row.raw_price_cents < e.low) e.low = row.raw_price_cents;
+    e.conds.add(p.condition_id); e.fins.add(p.finish_id);
+    e.prints.add(c.setCode + ':' + c.number);
+    e.listings.push({id:row.id, qty:row.quantity, price:row.raw_price_cents,
+                     cond:p.condition_id, fin:p.finish_id, set:c.setCode, num:c.number});
   }
+  for(const e of byName.values()) e.listings.sort((a,b)=> a.price - b.price || String(a.id).localeCompare(String(b.id)));
+
   const index = new Map(byName);              // exact keys
   for(const [nk,e] of byName){
     if(e.name.includes('//')){                // also index each face name on its own
@@ -216,7 +423,7 @@ async function loadInventory(){
   return inventory;
 }
 
-/* ---------- matching + render ---------- */
+/* ---------- matching ---------- */
 
 // Exact name (or single DFC face) first; otherwise the closest substring match.
 function lookup(q, inv){
@@ -233,45 +440,128 @@ function lookup(q, inv){
   return best ? {entry:best.e, partial:true} : null;
 }
 
+// Cheapest listing first, spilling to the next one when a listing runs short.
+function pickCopies(entry, want){
+  const picks = [];
+  let left = want;
+  for(const l of entry.listings){
+    if(left <= 0) break;
+    const take = Math.min(left, l.qty);
+    if(take > 0){ picks.push({listing:l, take}); left -= take; }
+  }
+  return picks;
+}
+
 function searchLink(name){
   const front = name.split('//')[0].trim();
   return 'https://manapool.com/cards?q='+encodeURIComponent(front)+'&seller='+SELLER;
 }
+function deckText(found){
+  return found.map(f => f.want + ' ' + f.entry.name.split('//')[0].trim()).join('\n');
+}
+
+/* ---------- the cart ---------- */
+
+function cartMsg(html, cls){ const el = $('cartmsg'); if(el){ el.innerHTML = html; el.className = cls || ''; } }
+
+async function addToCart(found){
+  const btn = $('tocart');
+  const want = [];
+  for(const f of found) for(const p of f.picks) want.push([p.listing.id, p.take]);
+  const copies = want.reduce((n,w)=>n+w[1], 0);
+
+  if(account.state !== 'in'){
+    cartMsg('Sign in at the bottom of this page first — one email link, once.', 'bad');
+    $('acct').scrollIntoView({behavior:'smooth', block:'center'});
+    $('email').focus();
+    return;
+  }
+
+  btn.disabled = true;
+  cartMsg('Updating your Mana Pool cart…');
+  try{
+    const tok = await accessToken();
+    if(!tok){
+      cartMsg('Your sign-in expired. Sign in again at the bottom of this page.', 'bad');
+      $('acct').scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+    const H = {apikey:KEY, Authorization:'Bearer '+tok, 'Content-Type':'application/json'};
+
+    const cur = await (await fetch(API+'cart_items?select=inventory_id,quantity&apikey='+KEY, {headers:H})).json();
+    const have = {};
+    (Array.isArray(cur) ? cur : []).forEach(r => { have[r.inventory_id] = r.quantity; });
+
+    // Set quantities rather than adding to them, so pressing this twice never doubles up.
+    const changes = [];
+    for(const w of want){
+      const delta = w[1] - (have[w[0]] || 0);
+      if(delta) changes.push({inventory_id:w[0], delta_quantity:delta, source:'browse', optimizer_touched:false});
+    }
+    if(!changes.length){
+      cartMsg('Those ' + copies + ' copies are already in your cart. <a href="https://manapool.com/cart" target="_blank" rel="noopener">Open cart →</a>', 'good');
+      return;
+    }
+    const r = await fetch(API+'rpc/synchronize_cart_items', {method:'POST', headers:H, body: JSON.stringify({changes})});
+    if(!r.ok) throw new Error('Cart update failed (HTTP ' + r.status + ').');
+
+    cartMsg('Added ' + copies + ' ' + (copies===1?'copy':'copies') + ' from ' + esc(STORE)
+          + '. <a href="https://manapool.com/cart" target="_blank" rel="noopener">Open your cart →</a>', 'good');
+  }catch(err){
+    cartMsg((err && err.message) ? esc(err.message) : 'Something went wrong.', 'bad');
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+/* ---------- render ---------- */
 
 function render(found, missing, inv){
-  const copies = found.reduce((n,f)=>n+f.entry.qty, 0);
+  lastFound = found;
+  const adding = found.reduce((n,f)=>n+f.want, 0);
+  const short  = found.filter(f=>f.want < f.asked_qty).length;
+  const cost   = found.reduce((n,f)=>n + f.picks.reduce((m,p)=>m + p.take*p.listing.price, 0), 0);
 
   let html = '<div class="summary" id="sumline">'
     + found.length + ' of ' + (found.length+missing.length) + ' cards in stock'
-    + '<small>' + copies.toLocaleString() + ' total copies · searched ' + inv.count.toLocaleString() + ' listings</small></div>';
+    + '<small>' + adding.toLocaleString() + ' ' + (adding===1?'copy':'copies') + ' · ' + money(cost) + ' of cards'
+    + (short ? ' · ' + short + ' short of what you asked for' : '')
+    + ' · searched ' + inv.count.toLocaleString() + ' listings</small></div>';
 
   if(!found.length){
     html += '<div class="empty">None of these cards are currently in stock.</div>';
+  } else {
+    html += '<div class="cartbar">'
+      + '<button id="tocart">Add ' + adding + ' ' + (adding===1?'copy':'copies') + ' to Mana Pool cart</button>'
+      + '<button class="ghost" id="cpList">Copy list</button>'
+      + '<button class="ghost" id="cpLinks">Copy links</button>'
+      + '</div><div id="cartmsg"></div>';
   }
 
   for(const f of found){
     const e = f.entry;
     const conds = CONDORDER.filter(c=>e.conds.has(c));
     const fins  = [...e.fins];
+    const picks = f.picks.map(p => p.take+'× '+p.listing.set+' '+p.listing.num+' '+p.listing.cond
+                  +(p.listing.fin!=='NF' ? ' '+(FIN[p.listing.fin]||p.listing.fin) : '')+' @ '+money(p.listing.price)).join(' · ');
     html += '<div class="hit"><div class="top">'
       + '<a href="'+searchLink(e.name)+'" target="_blank" rel="noopener">'+esc(e.name)+'</a>'
       + (e.low!=null ? '<span class="price">from '+money(e.low)+'</span>' : '')
       + '</div><div class="meta">'
-      + '<span class="tag qty">'+e.qty+'x</span>'
+      + '<span class="tag qty">adding '+f.want+'x</span>'
+      + (f.want < f.asked_qty ? '<span class="tag short">you wanted '+f.asked_qty+'</span>' : '')
+      + '<span class="tag">'+e.qty+' in stock</span>'
       + conds.map(c=>'<span class="tag" title="'+COND[c]+'">'+c+'</span>').join('')
       + fins.map(x=>'<span class="tag">'+(FIN[x]||x)+'</span>').join('')
-      + (e.printings>1 ? '<span class="tag">'+e.printings+' printings</span>' : '')
+      + (e.prints.size>1 ? '<span class="tag">'+e.prints.size+' printings</span>' : '')
       + (f.partial ? '<span class="tag part">partial match</span>' : '')
       + '</div>'
+      + '<div class="picks">taking ' + esc(picks) + '</div>'
       + (key(f.asked)!==key(e.name) ? '<div class="asked">you asked for: '+esc(f.asked)+'</div>' : '')
       + '</div>';
   }
 
-  if(found.length){
-    html += '<div class="row"><button class="ghost" id="cpLinks">Copy links</button>'
-          + '<button class="ghost" id="cpNames">Copy card names</button></div>'
-          + '<textarea class="out" id="outbox" readonly hidden></textarea>';
-  }
+  if(found.length) html += '<textarea class="out" id="outbox" readonly hidden></textarea>';
 
   if(missing.length){
     html += '<details><summary>Not in stock ('+missing.length+')</summary><ul>'
@@ -285,25 +575,30 @@ function render(found, missing, inv){
     const show = txt => { box.hidden=false; box.value=txt; box.select();
       try{ navigator.clipboard.writeText(txt); }catch(_){} };
     $('cpLinks').onclick = () => show(found.map(f=>searchLink(f.entry.name)).join('\n'));
-    $('cpNames').onclick = () => show(found.map(f=>f.entry.name).join('\n'));
+    $('cpList').onclick  = () => show(deckText(found));
+    $('tocart').onclick  = () => addToCart(found);
   }
 
-  if(window.innerWidth <= 640){
-    $('sumline').scrollIntoView({behavior:'smooth', block:'start'});
-  }
+  if(window.innerWidth <= 640) $('sumline').scrollIntoView({behavior:'smooth', block:'start'});
 }
-
-function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 /* ---------- main ---------- */
 
 async function run(forceReload){
-  const lines = $('cards').value.split('\n').map(cleanLine)
-                  .filter(l => l && !/^(\/\/|#)/.test(l));
+  const wanted = [], byKey = new Map();          // deduped, quantities summed
+  for(const raw of $('cards').value.split('\n')){
+    if(!raw.trim() || /^\s*(\/\/|#)/.test(raw)) continue;
+    const {name, qty} = parseLine(raw);
+    const k = key(name);
+    if(!k) continue;
+    const prev = byKey.get(k);
+    if(prev){ prev.qty += qty; }
+    else { const item = {name, qty}; byKey.set(k, item); wanted.push(item); }
+  }
 
   save();
   $('results').innerHTML = '';
-  if(!forceReload && !lines.length){ say('Paste at least one card name.', true); return; }
+  if(!forceReload && !wanted.length){ say('Paste at least one card name.', true); return; }
 
   $('go').disabled = $('reload').disabled = true;
   try{
@@ -312,16 +607,20 @@ async function run(forceReload){
     const inv = await loadInventory();
     progress(1);
 
-    if(!lines.length){ say('Loaded '+inv.count.toLocaleString()+' listings. Paste some cards and hit Check.'); return; }
+    if(!wanted.length){ say('Loaded '+inv.count.toLocaleString()+' listings. Paste some cards and hit Check.'); return; }
 
     const found = [], missing = [];
-    const seen = new Set();
-    for(const line of lines){
-      const lk = key(line);
-      if(seen.has(lk)) continue;
-      seen.add(lk);
-      const m = lookup(line, inv);
-      if(m){ m.asked = line; found.push(m); } else missing.push(line);
+    for(const w of wanted){
+      const m = lookup(w.name, inv);
+      if(m){
+        m.asked     = w.name;
+        m.asked_qty = w.qty;
+        m.want      = Math.min(w.qty, m.entry.qty);
+        m.picks     = pickCopies(m.entry, m.want);
+        found.push(m);
+      } else {
+        missing.push(w.qty > 1 ? w.qty + 'x ' + w.name : w.name);
+      }
     }
     say('Done.');
     render(found, missing, inv);
@@ -333,14 +632,60 @@ async function run(forceReload){
   }
 }
 
+/* ---------- wiring ---------- */
+
 restore();
+initAccount();
+// If this page is already open when you click the sign-in link, the browser just
+// changes the fragment instead of reloading — pick that up too.
+window.addEventListener('hashchange', initAccount);
+
 $('go').onclick     = () => run(false);
-$('reload').onclick = () => run(true);
 $('clear').onclick  = () => { $('cards').value=''; $('results').innerHTML=''; say(''); save(); $('cards').focus(); };
 $('cards').addEventListener('change', save);
 $('cards').addEventListener('keydown', e => {
   if((e.ctrlKey||e.metaKey) && e.key === 'Enter') run(false);
 });
+
+$('sendlink').onclick = async () => {
+  const email = $('email').value.trim();
+  $('signinerr').textContent = '';
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ $('signinerr').textContent = 'Enter the email address on your Mana Pool account.'; return; }
+  $('sendlink').disabled = true;
+  $('sendlink').textContent = 'Sending…';
+  try{
+    await sendLink(email);
+    LS.set(EMKEY, email);
+    $('step2').style.display = 'block';
+    $('sendlink').textContent = 'Send another link';
+  }catch(err){
+    $('signinerr').textContent = err.message;
+    $('sendlink').textContent = 'Email me a sign-in link';
+  }finally{
+    $('sendlink').disabled = false;
+  }
+};
+
+$('verify').onclick = async () => {
+  const email = $('email').value.trim(), code = $('code').value.trim();
+  $('signinerr').textContent = '';
+  if(!code){ $('signinerr').textContent = 'Paste the sign-in link from the email.'; return; }
+  $('verify').disabled = true;
+  $('verify').textContent = 'Checking…';
+  try{
+    signIn(await verifyInput(email, code));
+    $('code').value = '';
+    $('step2').style.display = 'none';
+    if(lastFound && lastFound.length) cartMsg('Signed in — press the cart button again.', 'good');
+  }catch(err){
+    $('signinerr').textContent = err.message;
+  }finally{
+    $('verify').disabled = false;
+    $('verify').textContent = 'Finish signing in';
+  }
+};
+$('code').addEventListener('keydown', e => { if(e.key === 'Enter') $('verify').click(); });
+$('email').addEventListener('keydown', e => { if(e.key === 'Enter') $('sendlink').click(); });
 
 // Works as a home-screen app even when opened straight off the filesystem.
 if(location.protocol === 'file:'){
