@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Mana Pool Seller Card Checker</title>
-<meta name="description" content="Check a list of Magic cards against a Mana Pool seller's live inventory.">
+<title>Moon Drop Trading Post — Card Checker</title>
+<meta name="description" content="Check a list of Magic cards against Moon Drop Trading Post's live Mana Pool inventory.">
 <meta name="theme-color" content="#1a1a29">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Card Checker">
+<meta name="apple-mobile-web-app-title" content="Moon Drop">
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<link rel="icon" href="./icon-192.png" sizes="192x192">
+<link rel="icon" href="./logo.png" sizes="192x192">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a1a29'/%3E%3Cpath d='M12 24h34v7H12z' fill='%23bfdfff'/%3E%3Cpath d='M14 32h34v7H14z' fill='%2380c0ff'/%3E%3Cpath d='M16 40h34v7H16z' fill='%230080ff'/%3E%3Cpath d='M20 42l8 8 17-19' stroke='%2346dc8c' stroke-width='7' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" type="image/svg+xml">
 <style>
   :root{
@@ -26,15 +26,17 @@
        margin:0;line-height:1.45;
        padding:var(--pad) max(16px,env(safe-area-inset-left)) calc(80px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-right))}
   .wrap{max-width:940px;margin:0 auto}
-  h1{font-size:1.5rem;margin:0 0 4px}
-  .sub{color:var(--mute);font-size:.9rem;margin:0 0 22px}
+  header{display:flex;align-items:center;gap:13px;margin-bottom:22px}
+  header img{width:46px;height:46px;border-radius:11px;flex:0 0 auto}
+  h1{font-size:1.42rem;font-weight:800;letter-spacing:.045em;margin:0;line-height:1.15}
+  .sub{color:var(--mute);font-size:.86rem;margin:3px 0 0}
   .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
   label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px}
   .hint{font-weight:400;color:var(--mute)}
-  input[type=text],textarea{width:100%;padding:11px 12px;font-size:16px;font-family:inherit;
-       border:1px solid var(--line);border-radius:8px;background:#fff;color:inherit}
-  input[type=text]:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:-1px;border-color:var(--brand)}
-  textarea{min-height:220px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px}
+  textarea{width:100%;padding:11px 12px;font-size:15px;border:1px solid var(--line);border-radius:8px;
+       background:#fff;color:inherit;min-height:240px;resize:vertical;
+       font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  textarea:focus{outline:2px solid var(--brand);outline-offset:-1px;border-color:var(--brand)}
   .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px}
   button{padding:12px 22px;background:var(--brand);color:#fff;border:0;border-radius:8px;font-size:16px;
        font-weight:600;cursor:pointer;min-height:46px}
@@ -42,9 +44,6 @@
   button:disabled{opacity:.5;cursor:default;filter:none}
   button.ghost{background:#fff;color:var(--brand);border:1px solid var(--line);font-weight:500;
        padding:9px 16px;font-size:14px;min-height:42px}
-  .check{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--mute);font-weight:500;
-       min-height:34px;cursor:pointer}
-  .check input{width:18px;height:18px;accent-color:var(--brand);flex:0 0 auto}
   #status{margin:14px 0 0;font-size:.9rem;color:var(--mute);min-height:1.2em}
   #status.err{color:#b3261e;font-weight:600}
   .bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:8px;display:none}
@@ -72,10 +71,12 @@
 
   @media (max-width:640px){
     :root{--pad:16px}
-    h1{font-size:1.25rem}
-    .sub{margin-bottom:16px;font-size:.85rem}
+    header{gap:11px;margin-bottom:16px}
+    header img{width:40px;height:40px}
+    h1{font-size:1.1rem;letter-spacing:.03em}
+    .sub{font-size:.8rem}
     .panel{padding:14px;border-radius:10px}
-    textarea{min-height:170px}
+    textarea{min-height:190px}
     #go{width:100%}
     .row{gap:10px}
     .row .ghost{flex:1 1 auto}
@@ -85,35 +86,28 @@
   @media (prefers-color-scheme:dark){
     :root{--bg:#14161b; --card:#1b1e25; --line:#2b303a; --ink:#e9ecf1; --mute:#98a2b3;
           --brand:#5aa9ff; --ok:#4cc98a; --okbg:#16241d; --okline:#2c4d3b; --warn:#e0b25a}
-    input[type=text],textarea{background:#12151a;border-color:#2b303a}
+    textarea{background:#12151a;border-color:#2b303a}
     button.ghost{background:#1b1e25}
     .tag{background:#1b1e25;color:#b9c6d6}
-    .price{color:var(--ok)}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <h1>Mana Pool Seller Card Checker</h1>
-  <p class="sub">Paste a list of cards. Only the ones this seller actually has in stock are listed.</p>
-
-  <div class="panel">
-    <label for="seller">Seller <span class="hint">— store name or username</span></label>
-    <input type="text" id="seller" value="moondroptradingpost" spellcheck="false" autocapitalize="off" autocomplete="off">
-
-    <div class="row">
-      <label class="check"><input type="checkbox" id="loose" checked> Fall back to partial name matches</label>
-      <label class="check"><input type="checkbox" id="shownf" checked> Show a "not in stock" list</label>
+  <header>
+    <img src="./logo.png" alt="">
+    <div>
+      <h1>MOON DROP TRADING POST</h1>
     </div>
-  </div>
+  </header>
 
   <div class="panel">
     <label for="cards">Card names <span class="hint">— one per line. Leading quantities and trailing set codes are ignored.</span></label>
     <textarea id="cards" spellcheck="false" autocapitalize="off" autocorrect="off" placeholder="Sol Ring&#10;Scarab Feast&#10;4x Avishkar Raceway&#10;Geth, Thane of Contracts (ONE) 92"></textarea>
     <div class="row">
       <button id="go">Check availability</button>
-      <button class="ghost" id="reload" title="Re-download this seller's inventory">Refresh inventory</button>
+      <button class="ghost" id="reload" title="Re-download the current inventory">Refresh inventory</button>
       <button class="ghost" id="clear">Clear list</button>
     </div>
     <div id="status"></div>
@@ -124,17 +118,19 @@
 </div>
 
 <script>
-const API   = 'https://sb-api.manapool.com/rest/v1/';
-const KEY   = 'sb_publishable_mwzveHhY-M-t19HCwYC1lw_pRUJyYZP';
-const PAGE  = 1000;
-const MAXP  = 200;               // safety stop: 200k listings
-const COND  = {NM:'Near Mint', LP:'Lightly Played', MP:'Moderately Played', HP:'Heavily Played', DMG:'Damaged'};
-const FIN   = {NF:'Non-Foil', FO:'Foil', EF:'Etched Foil'};
+const API    = 'https://sb-api.manapool.com/rest/v1/';
+const KEY    = 'sb_publishable_mwzveHhY-M-t19HCwYC1lw_pRUJyYZP';
+const SELLER = 'moondroptradingpost';          // Mana Pool normalized username
+const STORE  = 'Moon Drop Trading Post';       // display name
+const PAGE   = 1000;
+const MAXP   = 200;                            // safety stop: 200k listings
+const COND   = {NM:'Near Mint', LP:'Lightly Played', MP:'Moderately Played', HP:'Heavily Played', DMG:'Damaged'};
+const FIN    = {NF:'Non-Foil', FO:'Foil', EF:'Etched Foil'};
 const CONDORDER = ['NM','LP','MP','HP','DMG'];
 
 const $ = id => document.getElementById(id);
 const statusEl = $('status'), barEl = $('bar'), barFill = barEl.firstElementChild;
-const cache = new Map();          // normalized seller -> index
+let inventory = null;                          // loaded once, reused
 
 function say(msg, isErr){ statusEl.textContent = msg; statusEl.className = isErr ? 'err' : ''; }
 function progress(frac){
@@ -142,27 +138,11 @@ function progress(frac){
   barEl.style.display='block'; barFill.style.width = Math.round(frac*100)+'%';
 }
 
-/* ---------- saved settings (silently skipped if storage is unavailable) ---------- */
+/* ---------- saved list (silently skipped if storage is unavailable) ---------- */
 
-const STORE = 'mpChecker.v1';
-function save(){
-  try{
-    localStorage.setItem(STORE, JSON.stringify({
-      seller:$('seller').value, cards:$('cards').value,
-      loose:$('loose').checked, shownf:$('shownf').checked
-    }));
-  }catch(_){}
-}
-function restore(){
-  try{
-    const s = JSON.parse(localStorage.getItem(STORE) || 'null');
-    if(!s) return;
-    if(s.seller) $('seller').value = s.seller;
-    if(s.cards)  $('cards').value  = s.cards;
-    if(typeof s.loose  === 'boolean') $('loose').checked  = s.loose;
-    if(typeof s.shownf === 'boolean') $('shownf').checked = s.shownf;
-  }catch(_){}
-}
+const SAVEKEY = 'moondrop.cards.v1';
+function save(){ try{ localStorage.setItem(SAVEKEY, $('cards').value); }catch(_){} }
+function restore(){ try{ const v = localStorage.getItem(SAVEKEY); if(v) $('cards').value = v; }catch(_){} }
 
 /* ---------- name handling ---------- */
 
@@ -175,57 +155,40 @@ function key(s){
           .replace(/[^a-z0-9]+/g,' ')
           .trim();
 }
-function sellerKey(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,''); }
 
 // Strip decklist noise: leading quantity, trailing set code / collector number.
 function cleanLine(line){
   let s = line.trim();
   s = s.replace(/^\d+\s*[xX]?\s+/, '');                            // "3 Sol Ring" / "3x Sol Ring"
-  s = s.replace(/\s*[\(\[][^)\]]*[\)\]]\s*[\w\-\*★]*\s*$/, ''); // "(NEO) 123", "[M21]"
+  s = s.replace(/\s*[\(\[][^)\]]*[\)\]]\s*[\w\-\*★]*\s*$/, '');    // "(NEO) 123", "[M21]"
   s = s.replace(/\s*\*[FE]\*\s*$/i, '');                           // MTGO-style foil markers
   return s.trim();
 }
 
 function money(cents){
-  if(cents === null || cents === undefined) return '';
-  return '$' + (cents/100).toFixed(2);
+  return (cents === null || cents === undefined) ? '' : '$' + (cents/100).toFixed(2);
 }
 
 /* ---------- inventory ---------- */
 
-async function resolveSeller(raw){
-  const k = sellerKey(raw);
-  if(!k) throw new Error('Enter a seller name.');
-  let r = await fetch(API+'profiles?select=username,normalized_username&normalized_username=eq.'+encodeURIComponent(k)+'&limit=1&apikey='+KEY);
-  if(!r.ok) throw new Error('Seller lookup failed (HTTP '+r.status+').');
-  let j = await r.json();
-  if(j.length) return j[0];
-
-  r = await fetch(API+'profiles?select=username,normalized_username&normalized_username=ilike.'+encodeURIComponent('*'+k+'*')+'&limit=6&apikey='+KEY);
-  j = r.ok ? await r.json() : [];
-  if(j.length === 1) return j[0];
-  if(j.length > 1) throw new Error('Several sellers match "'+raw+'": '+j.map(p=>p.username).join(', ')+'. Pick one exactly.');
-  throw new Error('No Mana Pool seller found for "'+raw+'".');
-}
-
-async function loadInventory(profile){
-  const k = profile.normalized_username;
-  if(cache.has(k)) return cache.get(k);
+async function loadInventory(){
+  if(inventory) return inventory;
 
   const cols = 'name,quantity,from_price,condition_ids,finish_ids';
   const rows = [];
   for(let p=0; p<MAXP; p++){
     const url = API+'cardsmtg_browse_filter_s?select='+cols
-              + '&filter_seller_normalized_username=eq.'+encodeURIComponent(k)
+              + '&filter_seller_normalized_username=eq.'+SELLER
               + '&order=card_id.asc&limit='+PAGE+'&offset='+(p*PAGE)+'&apikey='+KEY;
     const r = await fetch(url);
-    if(!r.ok) throw new Error('Inventory request failed (HTTP '+r.status+').');
+    if(!r.ok) throw new Error('Inventory request failed (HTTP '+r.status+'). Try again in a moment.');
     const batch = await r.json();
     rows.push(...batch);
-    say('Loading ' + profile.username + "'s inventory… " + rows.length.toLocaleString() + ' listings');
+    say('Loading inventory… ' + rows.length.toLocaleString() + ' listings');
     progress(Math.min(0.95, rows.length/12000));
     if(batch.length < PAGE) break;
   }
+  if(!rows.length) throw new Error('No listings came back for ' + STORE + '. The store may be paused, or the API key may have changed.');
 
   // Group printings of the same card together, and index each face of a DFC.
   const byName = new Map();
@@ -249,19 +212,18 @@ async function loadInventory(profile){
     }
   }
 
-  const inv = {profile, index, list:[...byName.values()].map(e=>({e, k:key(e.name)})), count:rows.length};
-  cache.set(k, inv);
-  return inv;
+  inventory = {index, list:[...byName.values()].map(e=>({e, k:key(e.name)})), count:rows.length};
+  return inventory;
 }
 
 /* ---------- matching + render ---------- */
 
-function lookup(q, inv, loose){
+// Exact name (or single DFC face) first; otherwise the closest substring match.
+function lookup(q, inv){
   const qk = key(q);
   if(!qk) return null;
   const hit = inv.index.get(qk);
   if(hit) return {entry:hit, partial:false};
-  if(!loose) return null;
   let best = null;
   for(const {e,k} of inv.list){
     if(k.includes(qk) || qk.includes(k)){
@@ -271,22 +233,20 @@ function lookup(q, inv, loose){
   return best ? {entry:best.e, partial:true} : null;
 }
 
-function searchLink(name, sellerNorm){
+function searchLink(name){
   const front = name.split('//')[0].trim();
-  return 'https://manapool.com/cards?q='+encodeURIComponent(front)+'&seller='+encodeURIComponent(sellerNorm);
+  return 'https://manapool.com/cards?q='+encodeURIComponent(front)+'&seller='+SELLER;
 }
 
 function render(found, missing, inv){
-  const res = $('results');
-  const sellerNorm = inv.profile.normalized_username;
   const copies = found.reduce((n,f)=>n+f.entry.qty, 0);
 
   let html = '<div class="summary" id="sumline">'
-    + found.length + ' of ' + (found.length+missing.length) + ' cards in stock at ' + esc(inv.profile.username)
+    + found.length + ' of ' + (found.length+missing.length) + ' cards in stock'
     + '<small>' + copies.toLocaleString() + ' total copies · searched ' + inv.count.toLocaleString() + ' listings</small></div>';
 
   if(!found.length){
-    html += '<div class="empty">None of these cards are currently in stock from this seller.</div>';
+    html += '<div class="empty">None of these cards are currently in stock.</div>';
   }
 
   for(const f of found){
@@ -294,7 +254,7 @@ function render(found, missing, inv){
     const conds = CONDORDER.filter(c=>e.conds.has(c));
     const fins  = [...e.fins];
     html += '<div class="hit"><div class="top">'
-      + '<a href="'+searchLink(e.name, sellerNorm)+'" target="_blank" rel="noopener">'+esc(e.name)+'</a>'
+      + '<a href="'+searchLink(e.name)+'" target="_blank" rel="noopener">'+esc(e.name)+'</a>'
       + (e.low!=null ? '<span class="price">from '+money(e.low)+'</span>' : '')
       + '</div><div class="meta">'
       + '<span class="tag qty">'+e.qty+'x</span>'
@@ -313,18 +273,18 @@ function render(found, missing, inv){
           + '<textarea class="out" id="outbox" readonly hidden></textarea>';
   }
 
-  if(missing.length && $('shownf').checked){
+  if(missing.length){
     html += '<details><summary>Not in stock ('+missing.length+')</summary><ul>'
           + missing.map(m=>'<li>'+esc(m)+'</li>').join('') + '</ul></details>';
   }
 
-  res.innerHTML = html;
+  $('results').innerHTML = html;
 
   if(found.length){
     const box = $('outbox');
     const show = txt => { box.hidden=false; box.value=txt; box.select();
       try{ navigator.clipboard.writeText(txt); }catch(_){} };
-    $('cpLinks').onclick = () => show(found.map(f=>searchLink(f.entry.name, sellerNorm)).join('\n'));
+    $('cpLinks').onclick = () => show(found.map(f=>searchLink(f.entry.name)).join('\n'));
     $('cpNames').onclick = () => show(found.map(f=>f.entry.name).join('\n'));
   }
 
@@ -338,32 +298,29 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;'
 /* ---------- main ---------- */
 
 async function run(forceReload){
-  const rawSeller = $('seller').value.trim();
   const lines = $('cards').value.split('\n').map(cleanLine)
                   .filter(l => l && !/^(\/\/|#)/.test(l));
 
   save();
   $('results').innerHTML = '';
-  if(!rawSeller){ say('Enter a seller name.', true); return; }
   if(!forceReload && !lines.length){ say('Paste at least one card name.', true); return; }
 
   $('go').disabled = $('reload').disabled = true;
   try{
-    say('Looking up seller…'); progress(0.05);
-    const profile = await resolveSeller(rawSeller);
-    if(forceReload) cache.delete(profile.normalized_username);
-    const inv = await loadInventory(profile);
+    if(forceReload) inventory = null;
+    progress(0.05);
+    const inv = await loadInventory();
     progress(1);
 
-    if(!lines.length){ say('Loaded '+inv.count.toLocaleString()+' listings for '+profile.username+'. Paste some cards and hit Check.'); return; }
+    if(!lines.length){ say('Loaded '+inv.count.toLocaleString()+' listings. Paste some cards and hit Check.'); return; }
 
-    const loose = $('loose').checked;
     const found = [], missing = [];
     const seen = new Set();
     for(const line of lines){
-      if(seen.has(key(line))) continue;
-      seen.add(key(line));
-      const m = lookup(line, inv, loose);
+      const lk = key(line);
+      if(seen.has(lk)) continue;
+      seen.add(lk);
+      const m = lookup(line, inv);
       if(m){ m.asked = line; found.push(m); } else missing.push(line);
     }
     say('Done.');
@@ -380,8 +337,7 @@ restore();
 $('go').onclick     = () => run(false);
 $('reload').onclick = () => run(true);
 $('clear').onclick  = () => { $('cards').value=''; $('results').innerHTML=''; say(''); save(); $('cards').focus(); };
-['seller','cards'].forEach(id => $(id).addEventListener('change', save));
-['loose','shownf'].forEach(id => $(id).addEventListener('change', save));
+$('cards').addEventListener('change', save);
 $('cards').addEventListener('keydown', e => {
   if((e.ctrlKey||e.metaKey) && e.key === 'Enter') run(false);
 });
@@ -389,7 +345,7 @@ $('cards').addEventListener('keydown', e => {
 // Works as a home-screen app even when opened straight off the filesystem.
 if(location.protocol === 'file:'){
   try{
-    const m = {name:'Mana Pool Card Checker', short_name:'Card Checker', start_url:'./',
+    const m = {name:'Moon Drop Trading Post', short_name:'Moon Drop', start_url:'./',
                display:'standalone', background_color:'#1a1a29', theme_color:'#1a1a29', icons:[]};
     document.querySelector('link[rel=manifest]').href =
       URL.createObjectURL(new Blob([JSON.stringify(m)], {type:'application/manifest+json'}));
